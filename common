@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+# Copyright (C) Harsh Shandilya <msfjarvis@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
+CL_BOLD="\033[1m"
+CL_INV="\033[7m"
+CL_RED="\033[01;31m"
+CL_RST="\033[0m"
+CL_YLW="\033[01;33m"
+CL_BLUE="\033[01;34m"
+
+# To shut shellcheck up
+export CL_BOLD CL_INV CL_RED CL_RST CL_YLW CL_BLUE
+
+# Prints a formatted header to let the user know what's being done
+# SC2034: i appears unused. Verify it or export it.
+function echoText() {
+    echo -e "${CL_RED}"
+    echo -e "${CL_BOLD}"
+    echo -e "====$(for i in $(seq ${#1}); do echo -e "=\c"; done)===="
+    echo -e "==  ${1}  =="
+    echo -e "====$(for i in $(seq ${#1}); do echo -e "=\c"; done)===="
+    echo -e "${CL_RST}"
+}
+
+# Prints a warning in bold yellow
+function reportWarning() {
+    echo -e ""
+    echo -e "${CL_YLW}${1:?}${CL_RST}"
+    if [ -z "${2:-}" ]; then
+        echo -e ""
+    fi
+}
+
+function get_release_assets() {
+    local REPOSITORY RELEASE_TAG RELEASE_ID TMP_FILE
+    REPOSITORY="${1:?}"
+    RELEASE_TAG="${2:-latest}"
+    TMP_FILE="$(mktemp)"
+    if [ "${RELEASE_TAG}" == "latest" ]; then
+        RELEASE_ID=$(curl --silent "https://api.github.com/repos/${1:?}/releases/latest" | # Get the latest release from GitHub API
+            jq -r .id) # Get the ID of the release
+    else
+        # Get all releases from the v3 API, get the id and tag_name fields (called name in the slice) for each item, and write it to a temporary file
+        curl --silent "https://api.github.com/repos/${REPOSITORY}/releases" | jq '.[] | {id: .id, name: .tag_name}' >"${TMP_FILE}"
+        # Stream across the data we sliced earlier, printing the id and name as space separated values, then cleanly filter the one we need using grep and awk
+        RELEASE_ID=$(jq -r '"\(.id) \(.name)"' "${TMP_FILE}" | grep "${RELEASE_TAG}" | awk '{print $1}') # Get the ID of the latest release
+    fi
+    curl --silent "https://api.github.com/repos/${REPOSITORY}/releases/${RELEASE_ID}" | jq -r .assets[].browser_download_url # Get the download URL of the assets
+    [ -f "${TMP_FILE}" ] && rm -f "${TMP_FILE}"
+}
+
+function get_latest_release() {
+    curl --silent "https://api.github.com/repos/${1:?}/releases/latest" | # Get latest release from GitHub API
+        jq -r .tag_name # Get tag line
+}
