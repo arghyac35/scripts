@@ -85,6 +85,9 @@ if [ "$set_upload_build" = true ]; then
 				sudo apt install -y aria2 jq
 
 				bash -i "${SCRIPT_DIR}"/gdrive.sh
+			else
+				INSTALLED_VERSION="$(gdrive version | grep gdrive | awk '{print $2}')"
+				reportWarning "gdrive ${INSTALLED_VERSION} is already installed!"
 			fi
 			break
 			;;
