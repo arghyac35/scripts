@@ -100,9 +100,9 @@ echoText "Changing dir to ${aex_path}"
 cd $aex_path
 
 # Check aex version
-aex_check=$(grep -n "EXTENDED_VERSION" $SCRIPT_DIR/vendor/aosp/config/version.mk | grep -Eo '^[^:]+')
+aex_check=$(grep -n "EXTENDED_VERSION" $aex_path/vendor/aosp/config/version.mk | grep -Eo '^[^:]+')
 array=($aex_check)
-AEX_VERSION=$(sed -n ${array[0]}'p' <$SCRIPT_DIR/vendor/aosp/config/version.mk | cut -d "=" -f 2 | tr -d '[:space:]')
+AEX_VERSION=$(sed -n ${array[0]}'p' <$aex_path/vendor/aosp/config/version.mk | cut -d "=" -f 2 | tr -d '[:space:]')
 
 echo "${blu}Run repo sync?${txtrst}"
 select yn in "Yes" "No"; do
