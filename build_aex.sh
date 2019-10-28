@@ -68,10 +68,6 @@ if [ "$set_upload_build" = true ]; then
 			GDRIVE="$(command -v gdrive)"
 			if [ -z "${GDRIVE}" ]; then
 				echo "Installing gdrive"
-				# Install standard packages.
-				echoText "Installing necessary packages"
-				sudo apt install -y aria2 jq
-
 				bash -i "${SCRIPT_DIR}"/gdrive.sh
 			else
 				INSTALLED_VERSION="$(gdrive version | grep gdrive | awk '{print $2}')"

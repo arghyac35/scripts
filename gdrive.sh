@@ -9,6 +9,10 @@ SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 echo ${SCRIPT_DIR}
 source "${SCRIPT_DIR}"/common
 
+# Install standard packages.
+echoText "Installing necessary packages"
+sudo apt install -y aria2 jq
+
 function check_and_install_gdrive() {
     local GDRIVE ARTIFACT_NAME
     ARTIFACT_NAME="gdrive-linux-x64"
