@@ -22,7 +22,9 @@ rer=$(tput rev)$(tput bold)$(tput setaf 1) #  bold red reversed
 txtrst=$(tput sgr0)                        #  Reset
 
 DEVICE=$1
-AEX_VERSION=$(grep -n "EXTENDED_VERSION" $SCRIPT_DIR/vendor/aosp/config/version.mk | cut -d "=" -f 2 | tr -d '[:space:]')
+aex_check=$(grep -n "EXTENDED_VERSION" $SCRIPT_DIR/vendor/aosp/config/version.mk | grep -Eo '^[^:]+')
+array=( $aex_check )
+AEX_VERSION=$(sed -n ${array[0]}'p' < $SCRIPT_DIR/vendor/aosp/config/version.mk | cut -d "=" -f 2 | tr -d '[:space:]')
 
 [[ -z "${TG_BOT_API_KEY}" ]] && echo "API_KEY not defined, exiting!" && exit 1
 function sendTG() {
@@ -129,6 +131,10 @@ select yn in "eng" "userdebug"; do
 		;;
 	esac
 done
+export CCACHE_EXEC=$(which ccache)
+export USE_CCACHE=1
+export CCACHE_COMPRESS=1
+export CCACHE_MAXSIZE=50G # 50 GB
 if ! lunch "${device_build_type:?}"; then
 	echo "Lunching $DEVICE failed"
 	exit 1
