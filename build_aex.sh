@@ -164,7 +164,7 @@ select yn in "yes" "no"; do
 			cd $aex_path/out/target/product/$DEVICE
 			ZIP=$(ls AospExtended-${AEX_VERSION}-$DEVICE-*.zip)
 			ZIP_SIZE="$(du -h "${ZIP}" | awk '{print $1}')"
-			MD5="$(md5sum "${FILE}" | awk '{print $1}')"
+			MD5="$(md5sum "${ZIP}" | awk '{print $1}')"
 			if [ "$set_upload_build" = true -a "$set_upload_build_server" == "gdrive" ]; then
 				# Upload file
 				GDRIVE_UPLOAD_URL=$(gdrive upload --share $ZIP | awk '/https/ {print $7}')
