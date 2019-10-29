@@ -125,12 +125,14 @@ select yn in "eng" "userdebug"; do
 	esac
 done
 
+. build/envsetup.sh
+
 echo "${blu}Make clean build?${txtrst}"
 select yn in "yes" "no"; do
 	case $yn in
 	yes)
 		cd $aex_path
-		. build/envsetup.sh && make clean
+		make clean
 		break
 		;;
 	no) break ;;
@@ -155,6 +157,7 @@ select yn in "yes" "no"; do
 		echo "${ylw}Initiating AEX ${AEX_VERSION} build for ${DEVICE}...${txtrst}"
 		if ! mka aex; then
 			echo "$DEVICE Build failed"
+			sendTG "$DEVICE build is failed."
 			exit 1
 		else
 			cd $aex_path/out/target/product/$DEVICE
