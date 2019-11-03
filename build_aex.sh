@@ -21,6 +21,7 @@ grr=$(tput rev)$(tput bold)$(tput setaf 2) #  bold green reversed
 rer=$(tput rev)$(tput bold)$(tput setaf 1) #  bold red reversed
 txtrst=$(tput sgr0)                        #  Reset
 
+[[ -z "${1}" ]] && echo "Device code name not passed as parameter, exiting!" && exit 1
 DEVICE=$1
 
 [[ -z "${TG_BOT_API_KEY}" ]] && echo "BOT_API_KEY not defined, exiting!" && exit 1
